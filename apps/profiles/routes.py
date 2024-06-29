@@ -1,3 +1,4 @@
+from datetime import datetime
 from apps import db
 
 from flask import (
@@ -16,31 +17,18 @@ from sqlalchemy import desc
 from icecream import ic
 from sqlalchemy.exc import IntegrityError
 
+from apps.actions.models import Action
+from apps.globals.forms import ProfileActionForm
+from apps.globals.models import Profile_Actions
 from apps.home.models import Log
-from apps.home.util import search_user_profile
 from apps.profiles import blueprint
-from apps.profiles.forms import InfluencerForm
-from apps.profiles.models import Influencer
-
-from apps.reports.models import ScanResults
-from apps.social.models import SocialAccount
+from apps.profiles.forms import ProfileForm
+from apps.profiles.models import Profile
 
 
-@blueprint.route("/influencers")
+@blueprint.route("/profiles")
 @login_required
-def influencers():
-    """
-    Route decorator for the "/influencers" endpoint. This function is responsible for displaying a paginated list of influencers based on the search terms provided in the query string.
-
-    Parameters:
-        None
-
-    Returns:
-        A rendered HTML template "profiles/influencers.html" with the list of influencers.
-
-    Raises:
-        None
-    """
+def profiles():
     page = request.args.get("page", 1, type=int)
     per_page = 50  # Number of logs per page
 
@@ -48,219 +36,171 @@ def influencers():
     search_terms = request.args.get("q", "")
 
     # filter influencers
-    influencers = (
-        Influencer.query.filter(
-            (Influencer.full_name.ilike(f"%{search_terms}%"))
-            | (
-                Influencer.socialaccounts.any(
-                    SocialAccount.username.ilike(f"%{search_terms}%")
-                )
-            )
-        ).paginate(page=page, per_page=per_page, error_out=False)
-        # .all()
-    )
-    return render_template("profiles/influencers.html", influencers=influencers, search_terms=search_terms)
+    profiles = (
+        Profile.query.filter(Profile.name.ilike(f"%{search_terms}%"))).paginate(page=page, per_page=per_page, error_out=False)
+    return render_template("profiles/profiles.html", profiles=profiles, search_terms=search_terms)
 
 
-@blueprint.route("/influencer_add", methods=["GET", "POST"])
+@blueprint.route("/profile_add", methods=["GET", "POST"])
 @login_required
-@Log.add_log("إضافة ملف")
-def influencer_add():
-    """
-    Adds a new influencer to the database.
-
-    This function is a route handler for the "/influencer_add" endpoint. It requires the user to be logged in.
-    It also logs the action of adding a new influencer.
-
-    Parameters:
-    None
-
-    Returns:
-    If the form is valid and the new influencer is added successfully, it redirects to the "social_blueprint.socialaccount_add" endpoint with the newly created influencer's ID and profile data.
-    If there is an IntegrityError (duplicate influencer name), it redirects to the "profiles_blueprint.influencer_edit" endpoint with the existing influencer's ID and profile data.
-    If there is any other exception, it rolls back the database session and flashes an error message.
-    If the form is not valid, it renders the "profiles/influencer_add.html" template with the form and profile data.
-    """
-    profile_data = {}
-    if session.get("profile_data"):
-        profile_data = session["profile_data"]
-        # session.pop("profile_data")
-
-    form = InfluencerForm()  # Create an instance of the form
+@Log.add_log("إضافة جهة")
+def profile_add():
+    form = ProfileForm()  # Create an instance of the form
     if form.validate_on_submit():
-        try:
-            new_influencer = Influencer(
-                full_name=form.full_name.data,
-                gender=form.gender.data,
-                country=form.country.data,
-                city=form.city.data,
-                phone=form.phone.data,
-                email=form.email.data,
-                profile_picture=None,  # Set a default value initially
-            )
+        # Check if a profile with the given name already exists
+        existing_profile = Profile.query.filter_by(name=form.name.data).first()
 
-            # Check if the profile picture is a URL/Local and save it
-            set_as_default_profile_picture = form.set_as_default_profile_picture.data
-            if set_as_default_profile_picture:
-                new_influencer.profile_picture = profile_data["profile_picture"] if profile_data else None
-                # new_influencer.download_image(profile_data["profile_picture"])
-            elif form.profile_picture.data:
-                new_influencer.save_profile_picture(picture_file=form.profile_picture.data)
-
-            db.session.add(new_influencer)
-            db.session.commit()
-            flash("تم إضافة الملف", "success")
-            return redirect(url_for("social_blueprint.socialaccount_add",influencer_id=new_influencer.id,profile_data=profile_data,))
-        except IntegrityError as e:
-            ic("IntegrityError in <influencer_add>: ", e)
-            db.session.rollback()
-            flash(
-                "إسم الملف موجود بالفعل, تم تحويلك إلى صفحة تعديل الملف",
-                "danger",
-            )
-            influencer_id = (
-                Influencer.query.filter_by(full_name=form.full_name.data).first().id
-            )
-            # return redirect(url_for("social_blueprint.socialaccount_add",influencer_id=influencer_id,profile_data=profile_data,))
-            return redirect(
-                url_for(
-                    "profiles_blueprint.influencer_edit",
-                    influencer_id=influencer_id,
-                    profile_data=profile_data,
+        if existing_profile:
+            flash("هذه الجهة موجودة بالفعل, تم تحويلك إلى صفحة تعديل الجهة", "danger")
+            return redirect(url_for("profiles_blueprint.profile_edit", profile_id=existing_profile.id))
+        else:
+            try:
+                new_profile = Profile(
+                    name=form.name.data,
+                    about=form.about.data,
+                    est_date=form.est_date.data,
+                    account_manager=form.account_manager.data,
+                    account_manager_email=form.account_manager_email.data,
+                    phones=form.phones.data,
+                    address=form.address.data,
                 )
-            )
 
-        except Exception as e:
-            ic("Error in <influencer_add>: ", e)
-            db.session.rollback()
-            flash(f"حدث خطأ أثناء إضافة الملف\n{e}", "danger")
-    return render_template("profiles/influencer_add.html", form=form, profile_data=profile_data)
+                db.session.add(new_profile)
+                db.session.commit()
+                flash("تم إضافة الجهة", "success")
+                return redirect(url_for("profiles_blueprint.profiles"))
+            except IntegrityError as e:
+                ic("IntegrityError in <profile_add>: ", e)
+                db.session.rollback()
+                flash(f"خطأ أثناء تسجيل البيانات:\n{e}","danger")
+            except Exception as e:
+                ic("Error in <profile_add>: ", e)
+                db.session.rollback()
+                flash(f"حدث خطأ أثناء إضافة الجهة\n{e}", "danger")
+    return render_template("profiles/profile_add.html", form=form)
 
 
-@blueprint.route("/influencer_delete/<int:influencer_id>", methods=["POST"])
+@blueprint.route("/profile_delete/<int:profile_id>", methods=["POST"])
 @login_required
-@Log.add_log("حذف ملف")
-def influencer_delete(influencer_id):
-    """
-    Deletes an influencer from the database.
-
-    Parameters:
-        influencer_id (int): The ID of the influencer to be deleted.
-
-    Returns:
-        redirect: A redirect to the 'influencers' page if the influencer is successfully deleted.
-                  Otherwise, a redirect to the 'influencers' page with a flash message indicating that the influencer does not exist.
-    """
-    influencer = Influencer.query.get(influencer_id)
-    if not influencer:
-        flash("الملف غير موجود", "danger")
-        return redirect(url_for("profiles_blueprint.influencers"))
-    db.session.delete(influencer)
+@Log.add_log("حذف جهة")
+def profile_delete(profile_id):
+    profile = Profile.query.get(profile_id)
+    if not profile:
+        flash("الجهة غير موجودة", "danger")
+        return redirect(url_for("profiles_blueprint.profiles"))
+    db.session.delete(profile)
     db.session.commit()
-    flash("تم حذف الملف", "success")
-    return redirect(url_for("profiles_blueprint.influencers"))
+    flash("تم حذف الجهة", "success")
+    return redirect(url_for("profiles_blueprint.profiles"))
 
 
-@blueprint.route("/influencer_edit/<int:influencer_id>", methods=["GET", "POST"])
+@blueprint.route("/profile_edit/<int:profile_id>", methods=["GET", "POST"])
 @login_required
-@Log.add_log("تعديل ملف")
-def influencer_edit(influencer_id):
-    """
-    Edit an influencer's profile.
+@Log.add_log("تعديل جهة")
+def profile_edit(profile_id):
+    profile = Profile.query.get(profile_id)
+    if not profile:
+        flash("الجهة غير موجودة", "danger")
+        return redirect(url_for("profiles_blueprint.profiles"))
 
-    Parameters:
-        influencer_id (int): The ID of the influencer to be edited.
-
-    Returns:
-        redirect: A redirect to the 'influencers' page if the influencer does not exist.
-                  Otherwise, a redirect to the 'influencers' page with a success message.
-    """
-    # profile_data = {}
-    # if session.get("profile_data"):
-    #     profile_data = session["profile_data"]
-    #     # session.pop("profile_data")
-
-    influencer = Influencer.query.get(influencer_id)
-    if not influencer:
-        flash("الملف غير موجود", "danger")
-        return redirect(url_for("profiles_blueprint.influencers"))
-
-    # Prepare the data for the template
-    scanresults=[]
-    socialaccounts = influencer.socialaccounts
-    for socialaccount in socialaccounts:
-        scan_result = (
-            db.session.query(ScanResults)
-            .filter_by(socialaccount_id=socialaccount.id)
-            .order_by(desc(ScanResults.creation_date))
-            .limit(5)
-            .all()
-        )
-        scanresults.extend(scan_result)
-
-    profile_data_list = []
-    for socialaccount in socialaccounts:
-        profile_data = search_user_profile(socialaccount.username, socialaccount.platform_id)
-        profile_data_list.append(profile_data)
-
-    form = InfluencerForm(obj=influencer)  # Create an instance of the form
+    form = ProfileForm(obj=profile)  # Create an instance of the form
     if form.validate_on_submit():
-        influencer.full_name = form.full_name.data
-        influencer.gender = form.gender.data
-        influencer.country = form.country.data
-        influencer.city = form.city.data
-        influencer.phone = form.phone.data
-        influencer.email = form.email.data
-        # influencer.profile_picture=form.profile_picture.data
+        profile.name = form.name.data
+        profile.about = form.about.data
+        profile.est_date = form.est_date.data
+        profile.account_manager = form.account_manager.data
+        profile.account_manager_email = form.account_manager_email.data
+        profile.phones = form.phones.data
+        profile.address = form.address.data
         
-        # ic(form.profile_picture.data)
-        if type(form.profile_picture) == FileField and form.profile_picture.data:
-            influencer.save_profile_picture(picture_file=form.profile_picture.data)
-
         db.session.commit()
-        flash("تم تعديل الملف", "success")
-        return redirect(url_for("profiles_blueprint.influencers"))
+        flash("تم تعديل الجهة", "success")
+        return redirect(url_for("profiles_blueprint.profiles"))
 
     return render_template(
-        "profiles/influencer_edit.html",
+        "profiles/profile_edit.html",
         form=form,
-        influencer=influencer,
-        scanresults=scanresults,
-        profile_data_list=profile_data_list,
+        profile=profile,
     )
-    
-    
-@blueprint.route("/influencer/update_picture", methods=["POST"])
+
+
+# Modify the profile_actions function
+@blueprint.route("/profile_actions/<int:profile_id>", methods=["GET", "POST"])
 @login_required
-@Log.add_log("تعديل صورة ملف")
-def influencer_update_picture():
-    """
-    Updates the picture of an influencer.
+@Log.add_log("تعديل أحداث جهة")
+def profile_actions(profile_id):
+    form = ProfileActionForm()
+    form.action_id.choices = [(action.id, action.name) for action in Action.query.all()]
 
-    This function is a route handler for the "/influencer/update_picture" endpoint. It is responsible for updating the picture of an influencer when a POST request is made to this endpoint.
-
-    Parameters:
-        None
-
-    Returns:
-        A JSON response containing the redirect URL to the influencer edit page if the picture update is successful. Otherwise, a JSON response with an error message is returned.
-
-    Raises:
-        None
-    """
-    influencer_id = request.form.get('influencer_id')
-    picture_url = request.form.get('picture_url')
-    influencer = Influencer.query.get(influencer_id)
+    profile = Profile.query.get_or_404(profile_id)    
     
-    if not influencer:
-        flash("الملف غير موجود", "danger")
-        return jsonify({"redirect_url": url_for("profiles_blueprint.influencers")})
-    if not picture_url:
-        flash("الرجاء تحديد صورة", "danger")
-        return jsonify({"redirect_url": url_for("profiles_blueprint.influencer_edit", influencer_id=influencer_id)})
-    
-    influencer.profile_picture = picture_url
-    ic(influencer.profile_picture, picture_url)
-    # influencer.download_image(picture_url)
-    flash("تم تعديل الصورة", "success")
-    return jsonify({"redirect_url": url_for("profiles_blueprint.influencer_edit", influencer_id=influencer_id)})
+    if request.method == "GET":
+        profile_actions = (
+            db.session.query(Profile_Actions)
+            .filter(Profile_Actions.profile_id == profile.id)
+            .order_by(Profile_Actions.creation_date)
+            .all()
+        )
+        for i, profile_action in enumerate(profile_actions):
+            if i < len(profile_actions) - 1:  # For all but the last action
+                next_creation_date = profile_actions[i + 1].creation_date
+                ic(profile_action.action)
+                ic(next_creation_date)
+                difference = (next_creation_date - profile_action.creation_date).days
+                ic(difference)
+            else:  # For the last action
+                now = datetime.now().date()
+                difference = (now - profile_action.creation_date).days
+            rem_days = profile_action.action.due_days - difference
+            ic(rem_days)
+            profile_action.rem_days = rem_days
+
+        for profile_action in profile_actions:
+            ic(profile_action.creation_date)
+            ic(profile_action.rem_days)
+        
+        #get last profile_action.action.alert if it's rem_days<=0 else 'لا يوجد'
+        if profile_actions:
+            last_profile_action = profile_actions[-1]
+            if last_profile_action.rem_days <= 0:
+                profile.alert = last_profile_action.action.alert
+            else:
+                profile.alert = "لا يوجد"
+        return render_template("profiles/profile_actions.html", profile=profile, form=form, profile_actions=profile_actions)
+     
+    if form.validate_on_submit():
+        action = Action.query.get(form.action_id.data)
+        if action:
+            try:
+                new_profile_action = Profile_Actions(
+                    profile_id=profile.id,
+                    action_id=form.action_id.data,
+                    notes=form.notes.data
+                )
+                db.session.add(new_profile_action)
+                db.session.commit()
+                flash("تمت إضافة الإجراء بنجاح.", "success")
+            except Exception as e:
+                ic("Error in <profile_actions>: ", e)
+                db.session.rollback()
+                flash(f"حدث خطأ أثناء إضافة الإجراء\n{e}", "danger")                
+        else:
+            flash("لم يتم العثور على الحدث", "danger")
+        return redirect(url_for("profiles_blueprint.profile_actions", profile_id=profile_id))
+
+    # return render_template("profiles/profile_actions.html", profile=profile, form=form, profile_actions=profile_actions)
+
+
+@blueprint.route("/delete_profile_action/<profile_action_id>", methods=["POST"])
+@login_required
+@Log.add_log("حذف إجراء الملف الشخصي")
+def delete_profile_action(profile_action_id):
+    profile_action=Profile_Actions.query.get(profile_action_id)
+    if not profile_action:
+        flash("فشل عملية حذف الحدث", "danger")
+        # return redirect(url_for("profiles_blueprint.profile_actions", profile_id=profile_id))
+    profile_id=profile_action.profile_id
+    db.session.delete(profile_action)
+    db.session.commit()
+    flash("تم حذف الإقتران", "success")
+    return redirect(url_for("profiles_blueprint.profile_actions", profile_id=profile_id))

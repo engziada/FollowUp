@@ -3,6 +3,7 @@
     --primary-color: #242e4ce6; /* replace with your desired color */
     --secondary-color: #f8f9fa; /* replace with your desired color */
     --tertiary-color: #bfbfbf; /* replace with your desired color */
+    --danger-color:darkred
 }
 
 body {
@@ -51,16 +52,16 @@ body {
 
 
 .header-image {
-    background-image: url(/static/assets/img/illustrations/social.svg);
-    background-size: cover;
-    background-position: center;
-    height: 380px;
-    position: relative;
+    /* background-image: url(/static/assets/img/illustrations/social.svg); */
+    /* background-size: cover; */
+    /* background-position: center; */
+    height: 200px;
+    /* position: relative; */
     display: flex;
-    flex-direction: row;
+    /* flex-direction: row; */
     flex-wrap: wrap;
-    align-content: flex-start;
-    align-items: flex-end;
+    /* align-content: flex-start; */
+    /* align-items: flex-end; */
     justify-content: space-evenly;
     padding-inline: 25px;
 }
@@ -186,7 +187,7 @@ display: flex;
 }
 
 .error{
-    color: red;
+    color: var(--danger-color);
 }
 
 .thumbnail {
@@ -311,6 +312,11 @@ tbody tr{
     border-radius: 15px;
 } */
 
+.navbar-brand{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 /* Small screen styles */
 @media (max-width: 767px) { /* Adjust breakpoint as needed */
@@ -329,3 +335,36 @@ tbody tr{
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+
+.profile-name{
+    color: white;
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.profile-est{
+    color: black;
+    background-color: var(--tertiary-color);
+    border-radius: 10px;
+    text-align: center;
+
+}
+
+.profile-alert{
+    color: white;
+    background-color: var(--danger-color);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.form-inline{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
+    padding-block: 20px;
+}
+

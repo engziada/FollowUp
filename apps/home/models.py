@@ -15,12 +15,9 @@ class Log(db.Model):
     creation_time = db.Column(db.Time, nullable=True, default=db.func.current_time())
     created_by = db.Column(
         db.Integer,
-        db.ForeignKey("Users.id"),
+        db.ForeignKey("users.id"),
         nullable=True
     )
-    # user = db.relationship(
-    #     "Users", backref="log", lazy=True, cascade="all, delete-orphan"
-    # )
     user_ip = db.Column(db.String(255), nullable=True)
 
     def add_log(log_text:str):
@@ -66,17 +63,5 @@ class Log(db.Model):
 
 @event.listens_for(Log, "before_insert")
 def before_insert_listener(mapper, connection, target):
-    """
-    Listens for the "before_insert" event on the Log model and sets the "created_by" attribute of the target
-    object to the id of the currently authenticated user.
-
-    Parameters:
-        mapper (Mapper): The mapper object that is used to map the data between the database and the object.
-        connection (Connection): The database connection object.
-        target (Log): The target object that is being inserted into the database.
-
-    Returns:
-        None
-    """
     if current_user.is_authenticated:
         target.created_by = current_user.id

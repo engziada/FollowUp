@@ -1,25 +1,9 @@
 {% extends "layouts/base.html" %}
 
 {% block title %} الصفحة الرئيسية {% endblock %}
-{% block header_title %} رصد {% endblock %}
-{% block header_sub_title %}الصفحة الرئيسية{% endblock %}
-{% block header_profile_image %}
-<svg version="1.1" id="Layer_1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 64 78.4" style="enable-background:new 0 0 64 78.4;" xml:space="preserve">
-    <path id="Rectangle_14" class="st0" d="M10,0h1.2v11.2H0V10C0,4.5,4.5,0,10,0z" />
-    <rect id="Rectangle_15" x="35.2" y="17.6" class="st0" width="11.2" height="25.6" />
-    <rect id="Rectangle_16" x="17.6" y="35.2" class="st1" width="11.2" height="25.6" />
-    <path id="Rectangle_17" class="st0" d="M52.8,35.2H64v18.6c0,3.9-3.1,7-7,7h-4.2V35.2z" />
-    <rect id="Rectangle_18" y="52.8" class="st0" width="11.2" height="25.6" />
-    <path id="Rectangle_19" class="st0" d="M52.8,0H57c3.9,0,7,3.1,7,7l0,0l0,0v4.2H52.8V0z" />
-    <rect id="Rectangle_20" x="52.8" y="17.6" class="st1" width="11.2" height="11.2" />
-    <rect id="Rectangle_21" y="35.2" class="st0" width="11.2" height="11.2" />
-    <rect id="Rectangle_22" x="35.2" y="49.6" class="st0" width="11.2" height="11.2" />
-    <path id="Rectangle_23" class="st0" d="M17.6,67.2h11.2v1.2c0,5.5-4.5,10-10,10h-1.2V67.2z" />
-    <rect id="Rectangle_24" x="17.6" class="st1" width="28.8" height="11.2" />
-    <rect id="Rectangle_25" y="17.6" class="st0" width="28.8" height="11.2" />
-</svg>
-
-{% endblock %}
+{% block header_title %}إدارة الدعم و التمكين{% endblock %}
+{% block header_sub_title %}متابعة تأسيس مكاتب إدارة البيانات{% endblock %}
+{% block header_profile_image %}<img src="{{ url_for('static', filename='assets/img/brand/dark.svg')}}" />{% endblock %}
 
 <!-- /static/assets/img/illustrations/reading-side.svg -->
 
@@ -36,18 +20,6 @@
         <section class="section section-lg pt-0">
             <div class="container">
                 <div class="card border-0 overflow-hidden pt-6">
-                    <div class="position-relative">
-                        <img src="{{ url_for('static', filename='profile_pictures/' + stats.get('random_pictures')[0]) if stats.get('random_pictures')[0] else 'https://via.placeholder.com/150' }}" class="organic-radius img-fluid" style="width: 20%;">
-                        <img src="{{ url_for('static', filename='profile_pictures/' + stats.get('random_pictures')[1]) if stats.get('random_pictures')[1] else 'https://via.placeholder.com/150' }}" class="organic-radius img-fluid" style="position: absolute;width: 20%;top: 5%;left: 35%;z-index: 2;">
-                        <img src="{{ url_for('static', filename='profile_pictures/' + stats.get('random_pictures')[2]) if stats.get('random_pictures')[2] else 'https://via.placeholder.com/150' }}" class="organic-radius img-fluid" style="position: absolute;width: 20%;top: -20%;left: 65%;z-index: 3;">
-                        <img src="{{ url_for('static', filename='profile_pictures/' + stats.get('random_pictures')[3]) if stats.get('random_pictures')[3] else 'https://via.placeholder.com/150' }}" class="organic-radius img-fluid" style="position: absolute;width: 20%;top: -15%;left: 10%;z-index: 1;">
-                        <img src="{{ url_for('static', filename='profile_pictures/' + stats.get('random_pictures')[4]) if stats.get('random_pictures')[4] else 'https://via.placeholder.com/150' }}" class="organic-radius img-fluid" style="position: absolute;width: 20%;top: -25%;left: 50%;z-index: 1;">
-                        <img src="{{ url_for('static', filename='profile_pictures/' + stats.get('random_pictures')[5]) if stats.get('random_pictures')[5] else 'https://via.placeholder.com/150' }}" class="organic-radius img-fluid" style="position: absolute;width: 20%;top: 10%;left: 0%;z-index: 0;">
-                        <img src="{{ url_for('static', filename='profile_pictures/' + stats.get('random_pictures')[6]) if stats.get('random_pictures')[6] else 'https://via.placeholder.com/150' }}" class="organic-radius img-fluid" style="position: absolute;width: 20%;top: 6%;left: 70%;z-index: 2;">
-                        <img src="{{ url_for('static', filename='profile_pictures/' + stats.get('random_pictures')[7]) if stats.get('random_pictures')[7] else 'https://via.placeholder.com/150' }}" class="organic-radius img-fluid" style="position: absolute;width: 20%;top: 10%;left: 20%;z-index: 3;">
-                        <img src="{{ url_for('static', filename='profile_pictures/' + stats.get('random_pictures')[8]) if stats.get('random_pictures')[8] else 'https://via.placeholder.com/150' }}" class="organic-radius img-fluid" style="position: absolute;width: 20%;top: 15%;left: 50%;z-index: 1;">
-                        <img src="{{ url_for('static', filename='profile_pictures/' + stats.get('random_pictures')[9]) if stats.get('random_pictures')[9] else 'https://via.placeholder.com/150' }}" class="organic-radius img-fluid" style="position: absolute;width: 20%;top: -25%;left: 30%;z-index: 1;">                            
-                    </div>
                     <div class="card-body position-relative mt-n6 mx-2 bg-white border border-gray-300 text-center rounded py-8">
                         <table class="table">
                             <tr>
@@ -55,66 +27,34 @@
                             </tr>
                             <tr>
                                 <td>عدد المستخدمين الحاليين</td>
-                                <td>{{stats.get('total_users')}}</td>
+                                <td>{{stats.get('total_users',0)}}</td>
                             </tr>
                             <tr>
-                                <td>عدد الملفات المفتوحة</td>
-                                <td>{{stats.get('total_profiles')}}</td>
+                                <td>عدد الجهات</td>
+                                <td>{{stats.get('total_profiles',0)}}</td>
                             </tr>
                             <tr>
-                                <td>عدد مرات المسح حتى الآن</td>
-                                <td>{{stats.get('total_scans')}}</td>
+                                <td>عدد الإجراءات</td>
+                                <td>{{stats.get('total_actions',0)}}</td>
                             </tr>
                             <tr>
-                                <td class="h6">عدد حسابات مواقع التواصل الإجتماعي</td>
+                                <td>الإجراءات</td>
                             </tr>
-                            {% for platform, count in stats.get('accounts_per_platform') %}
-                                <tr>
-                                    <td>{{platform}}</td>
-                                    <td>{{count}}</td>
-                                </tr>
+                            {% for action in stats.get('action_profiles',{}).items() %} 
+                            <tr>
+                                <td>{{action}}</td>
+                                <td>{{action.value}}</td>
+                            </tr>
                             {% endfor %}
-                                <tr>
-                                    <td>الإجمالي</td>
-                                    <td>{{stats.get('total_accounts')}}</td>
-                                </tr>                                
                             <tr>
-                                <td class="h6">آخر عملية مسح</td>
+                                <td>الإجراءات الأخيرة</td>
                             </tr>
-                                <tr>
-                                    <td>التاريخ</td>
-                                    <td>{{stats.get('last_scan_date')}}</td>
-                                </tr>
-                                <tr>
-                                    <td>الوقت</td>
-                                    <td>{{stats.get('last_scan_time').strftime('%H:%M') if stats.get('last_scan_time') else '00:00'}}</td>
-                                </tr>
-                                <tr>
-                                    <td>المدة</td>
-                                    <td>{{stats.get('last_scan_duration')}}</td>
-                                </tr>
+                            {% for last_action in stats.get('last_action_profiles',{}).items() %}
                             <tr>
-                                <td class="h6">بيانات الوصول لقاعدة البيانات</td>
-                            </tr>
-                                <tr>
-                                    <td>إسم قاعدة البيانات</td>
-                                    <td>socialscannerdb</td>
-                                </tr>
-                                <tr>
-                                    <td>إسم المستخدم</td>
-                                    <td>admin</td>
-                                </tr>
-                                <tr>
-                                    <td>رقم البورت</td>
-                                    <td>5432</td>
-                                </tr>
-                            <tr>
-                                <td class="h6" colspan="2" style="text-align: center;">إسم الخادم</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align: center;">dpg-co9u07a0si5c739j3bh0-a.oregon-postgres.render.com</td>
-                            </tr>
-
+                                <td>{{last_action}}</td>
+                                <td>{{last_action.value}}</td>
+                            </tr> 
+                            {% endfor %}
                         </table>
                     </div>
                 </div>

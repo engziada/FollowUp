@@ -1,110 +1,60 @@
-import os
-import shutil
+from datetime import datetime
 from flask_login import current_user
-import requests
 from apps import db
 from werkzeug.utils import secure_filename
 from os import path, makedirs
 from flask import current_app, request
 from icecream import ic
-import datetime
 from sqlalchemy import event
+from apps.globals.models import Profile_Actions
 
 
-# Define Influencers Model
-class Influencer(db.Model):
-    __tablename__ = "influencers"
+class Profile(db.Model):
+    __tablename__ = "profiles"
     id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(255), nullable=False, unique=True)
-    gender = db.Column(db.String(255))
-    country = db.Column(db.String(255))
-    city = db.Column(db.String(255))
-    phone = db.Column(db.String(255))
-    email = db.Column(db.String(255))
-    profile_picture = db.Column(db.Text)
-    socialaccounts = db.relationship("SocialAccount", backref="influencer", lazy=True, cascade="all, delete-orphan")
+    code = db.Column(db.String(255))
+    name = db.Column(db.String(255), nullable=False, unique=True)
+    about = db.Column(db.Text)
+    est_date = db.Column(db.Date)
+    account_manager = db.Column(db.String(255))
+    account_manager_email = db.Column(db.String(255))
+    phones= db.Column(db.String(255))
+    address= db.Column(db.String(255))
+    actions = db.relationship("Action", secondary=Profile_Actions.__table__, backref=db.backref('profiles', lazy='dynamic'))
     creation_date = db.Column(db.Date, nullable=True, default=db.func.current_date())
     creation_time = db.Column(db.Time, nullable=True, default=db.func.current_time())
-    created_by = db.Column(
-        db.Integer,
-        db.ForeignKey("Users.id"),
-        nullable=True,
-    )
+    created_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    creator = db.relationship("Users", backref=db.backref("profiles", lazy=True))
 
-    def __repr__(self):
-        return f"Influencer(id={self.id}, full_name='{self.full_name}'), email='{self.email}', phone='{self.phone}', country='{self.country}', city='{self.city}', profile_picture='{self.profile_picture}', socialaccounts='{self.socialaccounts}'"
+# def set_code(target, value, oldvalue, initiator):
+#     """Event listener to automatically generate the code field."""
+#     if not target.creation_date:
+#         # If creation_date is not set, use the current year
+#         current_year = datetime.now().year
+#     else:
+#         current_year = target.creation_date.year
 
-    def save_profile_picture(self, picture_file):
-        """
-        Saves the profile picture provided as 'picture_file' in the static folder.
-        
-        Args:
-            picture_file: The file object representing the profile picture to be saved.
-        
-        Returns:
-            None
-        """
-        upload_folder = path.join(current_app.root_path, "static", "profile_pictures")
-        if not path.exists(upload_folder):
-            makedirs(upload_folder)
-        current_time = datetime.datetime.now().strftime("%y%m%d%H%M%S")
+#     # Assuming id is available; if not, this part needs adjustment
+#     target.code = f"DMO{current_year}{target.id}"
 
-        if picture_file:
-            try:
-                if path.exists(path.join(upload_folder, picture_file.filename)):
-                    return
-                filename = secure_filename(picture_file.filename)
-                new_filename = f'{current_time}.{filename.split(".")[-1]}'
-                filepath = path.join(upload_folder, new_filename)
-                picture_file.save(filepath)
-                self.profile_picture = f"{current_app.config['BASE_URL']}/{new_filename}"
-                db.session.commit()
-            except Exception as e:
-                errmsg=f"Error in <save_profile_picture> from Infulencer Model Save_Profile_Picture:\n{e} "
-                ic(errmsg)
-                # db.session.rollback()
+# # Assuming YourModel is the name of your model
+# event.listen(Profile.creation_date, 'set', set_code, retval=False)
 
 
-    # def download_image(self, image_url):
-    #     """
-    #     Downloads an image from the specified URL, saves it in the static folder, and updates the profile_picture attribute of the object.
-        
-    #     Parameters:
-    #         self: The instance of the class.
-    #         image_url (str): The URL of the image to download.
-        
-    #     Returns:
-    #         None
-    #     """
-    #     upload_folder = path.join(current_app.root_path, "static", "profile_pictures")
-    #     if not path.exists(upload_folder):
-    #         makedirs(upload_folder)
-    #     current_time = datetime.datetime.now().strftime("%y%m%d%H%M%S")
-    #     new_filename = secure_filename(f"{current_time}.jpg")
-    #     filepath = path.join(upload_folder, new_filename)
-
-    #     if image_url.startswith("/static"):
-    #         root_dir = os.path.dirname(os.path.abspath(__file__))
-    #         # ic(root_dir)
-    #         source_path = os.path.join(
-    #             root_dir, upload_folder, "temp_insta_profile_image.jpg"
-    #         )
-    #         # ic(source_path)
-    #         destination_path = os.path.join(root_dir, upload_folder, new_filename)
-    #         # ic(destination_path)
-    #         shutil.copyfile(source_path, destination_path)
-    #     else:
-    #         response = requests.get(image_url)
-    #         with open(filepath, "wb") as f:
-    #             f.write(response.content)
-    #     self.profile_picture = new_filename
-    #     db.session.commit()
-
-
-@event.listens_for(Influencer, "before_insert")
+@event.listens_for(Profile, "before_insert")
 def before_insert_listener(mapper, connection, target):
-    """
-    Listens for the "before_insert" event on the Influencer model and sets the "created_by" attribute of the target object to the id of the currently authenticated user.
-    """
     if current_user.is_authenticated:
         target.created_by = current_user.id
+
+
+@event.listens_for(Profile, 'after_insert')
+def after_insert_listener(mapper, connection, target):
+    target.code = f"DMO{datetime.now().year}{target.id}"
+    
+    # Manually update the code field after insertion
+    connection.execute(
+        Profile.__table__
+        .update()
+        .where(Profile.id == target.id)
+        .values(code=target.code)
+    )

@@ -10,14 +10,6 @@ from apps import create_app, db
 from icecream import ic
 from dotenv import load_dotenv
 
-from flask_apscheduler import APScheduler
-from apscheduler.triggers.cron import CronTrigger
-
-from tasks import scan_database
-
-# dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
-# load_dotenv(dotenv_path)
-
 # Determine the environment and load the appropriate .env file
 basedir = os.path.dirname(__file__)
 if os.getenv("FLASK_ENV") == "development":
@@ -51,36 +43,6 @@ if DEBUG:
     app.logger.info('Page Compression = ' + 'FALSE' if DEBUG else 'TRUE' )
     app.logger.info('DBMS             = ' + app_config.SQLALCHEMY_DATABASE_URI)
     app.logger.info('ASSETS_ROOT      = ' + app_config.ASSETS_ROOT )
-
-# Initialize scheduler instance
-sched = APScheduler()
-
-def scheduled_job():
-    with app.app_context():  # noqa: F821
-        scan_database(app, db.session)
-
-# Configuring the scheduler
-SCHEDULER_API_ENABLED = os.getenv("SCHEDULER_API_ENABLED", "True")
-SCHEDULER_TRIGGER_HOUR = os.getenv("SCHEDULER_TRIGGER_HOUR", 0)
-SCHEDULER_TRIGGER_MINUTE = os.getenv("SCHEDULER_TRIGGER_MINUTE", 0)
-ic(SCHEDULER_API_ENABLED, SCHEDULER_TRIGGER_HOUR, SCHEDULER_TRIGGER_MINUTE)
-app.config["SCHEDULER_API_ENABLED"] = SCHEDULER_API_ENABLED
-app.config["JOBS"] = [
-    {
-        "id": "job1",
-        "func": scheduled_job,
-        "args": [],
-        # "trigger": SCHEDULER_TRIGGER,
-        # "seconds": 60,  # Run every hour (adjust as needed)
-        "trigger": "cron",
-        "hour": SCHEDULER_TRIGGER_HOUR,  # Run daily at midnight
-        "minute": SCHEDULER_TRIGGER_MINUTE,
-    }
-]
-sched.init_app(app)
-# sched.add_job(id="scan", func=scheduled_job, trigger=CronTrigger(hour=6, minute=0))  # trigger="interval", seconds=10)#
-# scheduled_job()
-sched.start()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=4000)

@@ -20,18 +20,6 @@ from icecream import ic
 @login_required
 @Log.add_log("تصدير بيانات لملف إكسل")
 def export_to_excel(model_name):
-    """
-    Export data from a specified model to an Excel file and send it as a download.
-
-    Parameters:
-        model_name (str): The name of the model to export data from.
-
-    Returns:
-        flask.Response: The response object containing the Excel file as a download.
-
-    Raises:
-        None
-    """
     file_path: str = download_excel(model_name)#.replace("app/", "")
     # ic(file_path)
     if not file_path:
@@ -119,3 +107,4 @@ def backup_db():
         # Clean up: remove the backup file after sending it
         if os.path.exists(backup_file):
             os.remove(backup_file)
+            

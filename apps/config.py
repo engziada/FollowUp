@@ -1,8 +1,4 @@
 # -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
 import os
 import random
 import string
@@ -67,7 +63,6 @@ class Config(object):
 
         # This will create a file in <app> FOLDER
         SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'db.sqlite3')
-        # SQLALCHEMY_DATABASE_URI ='postgresql://postgres:mazisvip@localhost/SocialScanner'
 
     
     ic(os.getenv("FLASK_ENV"), DB_ENGINE, DB_USERNAME, DB_PASS, DB_HOST, DB_PORT, DB_NAME, USE_SQLITE)

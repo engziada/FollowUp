@@ -59,8 +59,9 @@
         <nav id="navbar-main" aria-label="Primary navigation" class="navbar navbar-main navbar-expand-lg navbar-theme-primary headroom navbar-dark">
             <div class="container position-relative">
                 <a class="navbar-brand me-lg-5" href="{{ url_for('home_blueprint.index') }}">
-                    <img class="navbar-brand-dark" src="/static/assets/img/brand/light.svg" alt="Logo light">
-                    <img class="navbar-brand-light" src="/static/assets/img/brand/dark.svg" alt="Logo dark">
+                    <img class="navbar-brand-dark" src="/static/assets/img/brand/light.svg" alt="Logo light" style="scale: 150%;">
+                    <img class="navbar-brand-light" src="/static/assets/img/brand/dark.svg" alt="Logo dark" style="scale: 150%;">
+                    قطاع شئون مكاتب البيانات و العملاء
                 </a>
                 <div class="navbar-collapse collapse me-auto" id="navbar_global">
                     <div class="navbar-collapse-header">
@@ -78,43 +79,26 @@
                     <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
 
                         <li class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" id="PagesDropdown0" aria-expanded="false" data-bs-toggle="dropdown">
-                                <i class="fas fa-bookmark"></i>
-                                المفضلة
-                                <span class="fas fa-angle-down nav-link-arrow ms-1"></span>
-                            </a>
-                            <div class="dropdown-menu py-0" aria-labelledby="PagesDropdown0">
-                                <a class="dropdown-item rounded-top" href="{{ url_for('home_blueprint.search') }}">بحث<i class="fas fa-search"></i></a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item " href="{{ url_for('reports_blueprint.socialaccounts') }}">عرض الحسابات<i class="fas fa-hashtag"></i></a>
-                                <a class="dropdown-item rounded-top" href="{{ url_for('content_blueprint.content_add') }}">إضافة محتوى<i class="fas fa-plus"></i></a>
-                                <a class="dropdown-item rounded-top" href="{{ url_for('reports_blueprint.scanResults_report') }}">تقرير المتابعة<i class="fas fa-sort-numeric-up-alt"></i></a>
-                            </div>
-                        </li>
-
-                        <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" id="xPagesDropdown" aria-expanded="false" data-bs-toggle="dropdown">
-                                <i class="fas fa-portrait"></i>
-                                المؤثرين
+                                <i class="fas fa-building"></i>
+                                الجهات
                                 <span class="fas fa-angle-down nav-link-arrow ms-1"></span>
                             </a>
                             <div class="dropdown-menu py-0" aria-labelledby="xPagesDropdown">
-                                <a class="dropdown-item rounded-top" href="{{ url_for('home_blueprint.search') }}">بحث<i class="fas fa-search"></i></a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item " href="{{ url_for('reports_blueprint.socialaccounts') }}">عرض الحسابات<i class="fas fa-hashtag"></i></a>
-                                <a class="dropdown-item rounded-bottom" href="{{ url_for('profiles_blueprint.influencers') }}">عرض الملفات<i class="fas fa-list"></i></a>
+                                <a class="dropdown-item rounded-top" href="{{ url_for('profiles_blueprint.profile_add') }}">إضافة<i class="fas fa-plus"></i></a>
+                                <a class="dropdown-item rounded-bottom" href="{{ url_for('profiles_blueprint.profiles') }}">عرض<i class="fas fa-list"></i></a>
                             </div>
                         </li>
         
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" id="yPagesDropdown" aria-expanded="false" data-bs-toggle="dropdown">
-                                <i class="fas fa-microphone-alt"></i>
-                                المحتوى
+                                <i class="fas fa-cog"></i>
+                                الأحداث
                                 <span class="fas fa-angle-down nav-link-arrow ms-1"></span>
                             </a>
                             <div class="dropdown-menu py-0" aria-labelledby="yPagesDropdown">
-                                <a class="dropdown-item rounded-top" href="{{ url_for('content_blueprint.content_add') }}">إضافة<i class="fas fa-plus"></i></a>
-                                <a class="dropdown-item rounded-bottom" href="{{ url_for('content_blueprint.contents') }}">عرض<i class="fas fa-list"></i></a>
+                                <a class="dropdown-item rounded-top" href="{{ url_for('action_blueprint.action_add') }}">إضافة<i class="fas fa-plus"></i></a>
+                                <a class="dropdown-item rounded-bottom" href="{{ url_for('action_blueprint.actions') }}">عرض<i class="fas fa-list"></i></a>
                             </div>
                         </li>
         
@@ -125,11 +109,7 @@
                                 <span class="fas fa-angle-down nav-link-arrow ms-1"></span>
                             </a>
                             <div class="dropdown-menu py-0" aria-labelledby="zPagesDropdown">
-                                <a class="dropdown-item rounded-top" href="{{ url_for('reports_blueprint.daily_report') }}">التقرير اليومي<i class="fas fa-calendar-alt"></i></a>
-                                <a class="dropdown-item rounded-top" href="{{ url_for('reports_blueprint.scanResults_report') }}">تقرير المتابعة<i class="fas fa-sort-numeric-up-alt"></i></a>
-                                <a class="dropdown-item " href="{{ url_for('reports_blueprint.scanLog') }}">تقرير الأدآء<i class="fas fa-cogs"></i></a>
-                                <a class="dropdown-item " href="{{ url_for('reports_blueprint.contents_report') }}">تقرير المحتوى<i class="fas fa-microphone"></i></a>
-                                <a class="dropdown-item rounded-bottom" href="{{ url_for('reports_blueprint.scanResults') }}">بيانات المسح<i class="fas fa-barcode"></i></a>
+                                <a class="dropdown-item rounded" href="{{ url_for('reports_blueprint.profiles_report') }}">تقرير الجهات<i class="fas fa-city"></i></a>
                             </div>
                         </li>
         
@@ -141,11 +121,9 @@
                             </a>
                             <div class="dropdown-menu py-0" aria-labelledby="wPagesDropdown">
                                 <a class="dropdown-item rounded-top" href="{{ url_for('home_blueprint.log') }}">سجل الأحداث<i class="fas fa-clipboard-list"></i></a>
-                                <!-- <a class="dropdown-item rounded" href="{{ url_for('authentication_blueprint.register') }}">مستخدم جديد<i class="fas fa-user-plus"></i></a> -->
                                 <a class="dropdown-item rounded" href="{{ url_for('authentication_blueprint.users') }}">إدارة المستخدمين<i class="fas fa-users-cog"></i></a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item rounded" href="{{ url_for('globals_blueprint.upload_excel') }}">إستيراد بيانات<i class="fas fa-file-import"></i></a>
-                                <!-- <a class="dropdown-item rounded" href="{{ url_for('globals_blueprint.backup_db') }}">نسخة إحتياطية<i class="fas fa-database"></i></a> -->
                                 <div class="dropdown-divider"></div>
                                 {% if current_user.is_authenticated %}
                                 <a class="dropdown-item rounded-bottom" href="{{ url_for('authentication_blueprint.logout') }}">خروج<i class="fas fa-sign-out-alt"></i></a>
@@ -170,37 +148,6 @@
             </div>
         </nav>
         
-    <!-- <div class="neonav">
-        <div class="neonav-item">
-            <a href="#" class="neonav-dropdown-toggle" onclick="toggleDropdown('Dropdown1')">
-                <i class="fas fa-portrait"></i>
-                المشاهير
-                <span class="fas fa-angle-down"></span>
-            </a>
-            <div class="neonav-dropdown" id="Dropdown1">
-                <div class="neonav-dropdown-menu">
-                    <a href="/search">بحث <i class="fas fa-search"></i></a>
-                    <a href="/socialaccounts">عرض الحسابات <i class="fas fa-hashtag"></i></a>
-                    <a href="/influencers">عرض الملفات <i class="fas fa-list"></i></a>
-                </div>
-            </div>
-        </div>
-
-        <div class="neonav-item">
-            <a href="#" class="neonav-dropdown-toggle" onclick="toggleDropdown('Dropdown2')">
-                <i class="fas fa-portrait"></i>
-                المشاهير
-                <span class="fas fa-angle-down"></span>
-            </a>
-            <div class="neonav-dropdown" id="Dropdown2">
-                <div class="neonav-dropdown-menu">
-                    <a href="/search">بحث <i class="fas fa-search"></i></a>
-                    <a href="/socialaccounts">عرض الحسابات <i class="fas fa-hashtag"></i></a>
-                    <a href="/influencers">عرض الملفات <i class="fas fa-list"></i></a>
-                </div>
-            </div>
-        </div>
-    </div> -->
 
     <section class="section-header bg-secondary text-white header-image">
         <div class="header-title">
@@ -210,11 +157,6 @@
         <div class="header-profile-picture">
             {% block header_profile_image %}{% endblock %}
         </div>
-        <figure class="position-absolute bottom-0 left-0 w-100 d-none d-md-block mb-n2 header-figure">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200" preserveAspectRatio="none">
-                <path fill="#ffffff" d="M0,100 Q125,50 250,100 Q375,150 500,100 Q625,50 750,100 Q875,150 1000,100 L1000,200 L0,200 Z"></path>
-            </svg>
-        </figure>
     </section>
 
 

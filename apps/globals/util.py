@@ -8,24 +8,13 @@ import pandas as pd
 from werkzeug.datastructures.file_storage import FileStorage
 from flask import current_app, flash
 
-from apps.content_types.models import Content
+from apps.actions.models import Action
 from apps.home.models import Log
-from apps.profiles.models import Influencer
-from apps.reports.models import ScanResults, ScanLog
-from apps.social.models import SocialAccount, SocialAccount_Content
+from apps.profiles.models import Profile
 from apps.authentication.models import Users
 
 
 def download_excel(model_name) -> str:
-    """
-    Downloads data from a given model and saves it to an Excel file. 
-
-    Args:
-        model_name (str): The name of the model to download data from.
-
-    Returns:
-        str: The full path of the saved Excel file.
-    """
     model = globals().get(model_name)
     if not model:
         ic("Model not found")

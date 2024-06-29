@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "SocialScannerWeb"
+name = "FollowUp"
 version = "0.1.0"
 description = ""
 authors = ["Muhammad Ziada <engziada@gmail.com>"]
@@ -31,6 +31,8 @@ xlsxwriter = "^3.2.0"
 requests = "^2.31.0"
 tablib = {extras = ["xlsx"], version = "^3.6.1"}
 pgdumplib = "^3.1.0"
+pyclean = "^3.0.0"
+mysqlclient = "^2.2.4"
 
 
 [build-system]
