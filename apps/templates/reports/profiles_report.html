@@ -33,7 +33,7 @@
                 <table class="table table-hover" id="myTable">
                     <thead>
                         <tr>
-                            <th scope="col">كود</th>
+                            <th scope="col">رمز الجهة</th>
                             <th scope="col">الجهة</th>
                             <th scope="col">تاريخ الإضافة</th>
                             <th scope="col">آخر إجراء</th>
@@ -56,7 +56,13 @@
                             <td>{{ data.last_action }}</td>
                             <td>{{ data.last_creation_date }}</td>
                             <td>{{ data.eestablishments }}</td>
-                            <td>{{ data.rem_days }}</td>
+                            <td>
+                                {% if data.rem_days < 0 %}
+                                    متأخر ({{ data.rem_days|abs }}) أيام/يوم
+                                {% else %}
+                                    {{ data.rem_days }}
+                                {% endif %}
+                            </td>
                             <td>{{ data.alert }}</td>
                         </tr>
                         {% endfor %}

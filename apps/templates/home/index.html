@@ -23,7 +23,7 @@
                     <div class="card-body position-relative mt-n6 mx-2 bg-white border border-gray-300 text-center rounded py-8">
                         <table class="table">
                             <tr>
-                                <th>نظرة خاطفة</th>
+                                <th>إحصائيات النظام</th>
                             </tr>
                             <tr>
                                 <td>عدد المستخدمين الحاليين</td>
@@ -37,24 +37,6 @@
                                 <td>عدد الإجراءات</td>
                                 <td>{{stats.get('total_actions',0)}}</td>
                             </tr>
-                            <tr>
-                                <td>الإجراءات</td>
-                            </tr>
-                            {% for action in stats.get('action_profiles',{}).items() %} 
-                            <tr>
-                                <td>{{action}}</td>
-                                <td>{{action.value}}</td>
-                            </tr>
-                            {% endfor %}
-                            <tr>
-                                <td>الإجراءات الأخيرة</td>
-                            </tr>
-                            {% for last_action in stats.get('last_action_profiles',{}).items() %}
-                            <tr>
-                                <td>{{last_action}}</td>
-                                <td>{{last_action.value}}</td>
-                            </tr> 
-                            {% endfor %}
                         </table>
                     </div>
                 </div>
