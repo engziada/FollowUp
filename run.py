@@ -1,7 +1,7 @@
 import os
 
 from flask_migrate import Migrate
-from flask_minify  import Minify
+# from flask_minify  import Minify
 from sys import exit
 
 from apps.config import config_dict
@@ -36,8 +36,8 @@ except KeyError as e:
 app = create_app(app_config)
 Migrate(app, db)
 
-if not DEBUG:
-    Minify(app=app, html=True, js=False, cssless=False)
+# if not DEBUG:
+#     Minify(app=app, html=True, js=False, cssless=False)
 if DEBUG:
     app.logger.info('DEBUG            = ' + str(DEBUG)             )
     app.logger.info('Page Compression = ' + 'FALSE' if DEBUG else 'TRUE' )

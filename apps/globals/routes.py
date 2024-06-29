@@ -5,7 +5,7 @@ import random
 from flask import current_app, redirect, render_template, flash, request, send_file, send_from_directory, url_for
 from flask_login import login_required
 from werkzeug.datastructures.file_storage import FileStorage
-import pgdumplib
+# import pgdumplib
 
 from apps.globals import blueprint
 
@@ -72,39 +72,39 @@ def upload_excel():
     return render_template("globals/upload_excel.html")
 
 
-@blueprint.route("/backup_db")
-@login_required
-@Log.add_log("تنزيل نسخة إحتياطية من قاعدة البيانات")
-def backup_db():
-    # PostgreSQL database credentials
-    DB_HOST = current_app.config.get('DB_HOST')
-    DB_PORT = current_app.config.get('DB_PORT')
-    DB_NAME = current_app.config.get('DB_NAME')
-    DB_USER = current_app.config.get("DB_USERNAME")
-    DB_PASSWORD = current_app.config.get('DB_PASS')
+# @blueprint.route("/backup_db")
+# @login_required
+# @Log.add_log("تنزيل نسخة إحتياطية من قاعدة البيانات")
+# def backup_db():
+#     # PostgreSQL database credentials
+#     DB_HOST = current_app.config.get('DB_HOST')
+#     DB_PORT = current_app.config.get('DB_PORT')
+#     DB_NAME = current_app.config.get('DB_NAME')
+#     DB_USER = current_app.config.get("DB_USERNAME")
+#     DB_PASSWORD = current_app.config.get('DB_PASS')
 
-    backup_file = f"backup_{DB_NAME}_{datetime.now().strftime('%Y%m%d%H%M%S')}.sql"
+#     backup_file = f"backup_{DB_NAME}_{datetime.now().strftime('%Y%m%d%H%M%S')}.sql"
 
-    # Set environment variables for pg_dump to use
-    os.environ["PGPASSWORD"] = DB_PASSWORD
+#     # Set environment variables for pg_dump to use
+#     os.environ["PGPASSWORD"] = DB_PASSWORD
 
-    try:
-        # Create a new dump file
-        dump = pgdumplib.dump.Dump()
-        dump.host = DB_HOST
-        dump.port = int(DB_PORT)
-        dump.database = DB_NAME
-        dump.username = DB_USER
+#     try:
+#         # Create a new dump file
+#         dump = pgdumplib.dump.Dump()
+#         dump.host = DB_HOST
+#         dump.port = int(DB_PORT)
+#         dump.database = DB_NAME
+#         dump.username = DB_USER
 
-        with open(backup_file, "wb") as f:
-            dump.export(f)
+#         with open(backup_file, "wb") as f:
+#             dump.export(f)
 
-        return send_file(backup_file, as_attachment=True)
-    except Exception as e:
-        ic("Error in DB backup:", e)
-        return render_template('home/page-500.html'), 500
-    finally:
-        # Clean up: remove the backup file after sending it
-        if os.path.exists(backup_file):
-            os.remove(backup_file)
+#         return send_file(backup_file, as_attachment=True)
+#     except Exception as e:
+#         ic("Error in DB backup:", e)
+#         return render_template('home/page-500.html'), 500
+#     finally:
+#         # Clean up: remove the backup file after sending it
+#         if os.path.exists(backup_file):
+#             os.remove(backup_file)
             
