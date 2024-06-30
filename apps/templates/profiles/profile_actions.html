@@ -39,10 +39,7 @@
                     </div>
                  </div>
                 <br>                
-                {% if profile_actions %}
                 <h3 style="border-bottom: 3px double #000;">الأحداث المقترنة</h3>
-                <button onclick="exportTableToExcel()" class="btn" style="font-family: 'Jersey 10'; font-size: x-large;"><span class="fas fa-file-excel" style="font-size: x-large; padding-inline: 5px; color: green;"></span>Export to Excel</button>
-
                 <form class="form-inline" action="{{ url_for('profiles_blueprint.profile_actions', profile_id=profile.id) }}" method="post">
                     {{ form.hidden_tag() }}
                     <label for="action_id" style="min-width: fit-content;">حدث جديد</label>
@@ -52,6 +49,8 @@
                     {{ form.submit(class="btn btn-primary") }}
                 </form>
 
+                {% if profile_actions %}
+                <button onclick="exportTableToExcel()" class="btn" style="font-family: 'Jersey 10'; font-size: x-large;"><span class="fas fa-file-excel" style="font-size: x-large; padding-inline: 5px; color: green;"></span>Export to Excel</button>
                 <div class="table-container">
                     <table class="table table-hover" id="myTable">
                         <thead>
@@ -90,6 +89,8 @@
                         </tbody>
                     </table>
                 </div>
+                {% else %}
+                لا يوجد أي إجراءات مقترنة
                 {% endif %}
             </div>
         </section>

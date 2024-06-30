@@ -57,10 +57,14 @@
                             <td>{{ data.last_creation_date }}</td>
                             <td>{{ data.eestablishments }}</td>
                             <td>
-                                {% if data.rem_days < 0 %}
+                                {% if data.rem_days %}
+                                    {% if data.rem_days < 0 %}
                                     متأخر ({{ data.rem_days|abs }}) أيام/يوم
-                                {% else %}
+                                    {% else %}
                                     {{ data.rem_days }}
+                                    {% endif %}
+                                {% else %}
+                                غير محدد
                                 {% endif %}
                             </td>
                             <td>{{ data.alert }}</td>
